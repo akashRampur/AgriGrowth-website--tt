@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriGrowth | Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --ruby: #8f1731; --green: #285b3b; --green-dark: #183c29; --bg: #f5f0e5; --text: #222b23; --border: #e6e4da; }
+    body { font-family: 'DM Sans', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
+    header { background: var(--green-dark); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; font-family: 'Manrope', sans-serif; font-size: 22px; }
+    .container { padding: 30px; max-width: 1200px; margin: 0 auto; }
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+    .tab-btn { padding: 10px 20px; background: white; border: 1px solid var(--border); cursor: pointer; font-weight: bold; border-radius: 6px; }
+    .tab-btn.active { background: var(--ruby); color: white; border-color: var(--ruby); }
+    .panel { display: none; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .panel.active { display: block; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+    th, td { border: 1px solid var(--border); padding: 12px; text-align: left; }
+    th { background: #f8f9fa; font-family: 'Manrope', sans-serif; }
+    .status-0 { color: green; font-weight: bold; }
+    .status-1 { color: #b8860b; font-weight: bold; }
+    .btn { padding: 8px 15px; background: var(--green); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .btn:hover { background: var(--green-dark); }
+    .flex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    
+    /* Modal Styles */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; padding: 30px; border-radius: 8px; width: 400px; max-width: 90%; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 12px; }
+    .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>AgriGrowth Admin Panel</h1>
+    <span>Secure Dashboard</span>
+  </header>
+
+  <div class="container">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('leads')">📬 Leads & Enquiries</button>
+      <button class="tab-btn" onclick="switchTab('codes')">🛡️ Scratch Codes Database</button>
+    </div>
+
+    <!-- Leads Panel -->
+    <div id="leads-panel" class="panel active">
+      <div class="flex-header">
+        <h2>Customer & Dealer Leads</h2>
+        <button class="btn" onclick="exportCSV('leadsTable', 'AgriGrowth_Leads.csv')">📥 Download CSV</button>
+      </div>
+      <div style="overflow-x: auto;">
+        <table id="leadsTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Type</th>
+              <th>Name</th>
+              <th>Business</th>
+              <th>Phone</th>
+              <th>Message</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="leads-body">
+            <tr><td colspan="7">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Codes Panel -->
+    <div id="codes-panel" class="panel">
+      <div class="flex-header">
+        <h2>Product Verification Codes</h2>
+        <div>
+          <button class="btn" style="background:var(--ruby); margin-right: 10px;" onclick="document.getElementById('addModal').classList.add('active')">➕ Add New Code</button>
+          <button class="btn" onclick="exportCSV('codesTable', 'AgriGrowth_Codes.csv')">📥 Download CSV</button>
+        </div>
+      </div>
+      <div style="overflow-x: auto;">
+        <table id="codesTable">
+          <thead>
+            <tr>
+              <th>Scratch Code</th>
+              <th>Product</th>
+              <th>Batch</th>
+              <th>Mfg</th>
+              <th>Exp</th>
+              <th>Pack Size</th>
+              <th>Scans</th>
+              <th>First Verified</th>
+            </tr>
+          </thead>
+          <tbody id="codes-body">
+            <tr><td colspan="8">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Code Modal -->
+  <div id="addModal" class="modal">
+    <div class="modal-content">
+      <h3 style="margin-top:0;">Add New Scratch Code</h3>
+      <form id="addCodeForm">
+        <div class="form-group">
+          <label>Scratch Code</label>
+          <input type="text" id="add-code" required placeholder="e.g. AG-NEW-9999" style="text-transform: uppercase;">
+        </div>
+        <div class="form-group">
+          <label>Product Name</label>
+          <select id="add-product" required>
+            <option value="Humistar">Humistar</option>
+            <option value="Bhoomistar">Bhoomistar</option>
+            <option value="AgriShield Duo">AgriShield Duo</option>
+            <option value="KisanWeed Clean">KisanWeed Clean</option>
+            <option value="ZymeBoost Gold">ZymeBoost Gold</option>
+            <option value="RootMax GR">RootMax GR</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Batch No.</label>
+          <input type="text" id="add-batch" required placeholder="e.g. Batch #123">
+        </div>
+        <div style="display:flex; gap:10px;">
+          <div class="form-group" style="flex:1;">
+            <label>Mfg Date</label>
+            <input type="text" id="add-mfg" required placeholder="Jan 2026">
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label>Exp Date</label>
+            <input type="text" id="add-exp" required placeholder="Dec 2028">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Pack Size</label>
+          <input type="text" id="add-pack" required placeholder="500 ml">
+        </div>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+          <button type="submit" class="btn" style="flex:1;">Save Code</button>
+          <button type="button" class="btn" style="flex:1; background:#999;" onclick="document.getElementById('addModal').classList.remove('active')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById(`${tab}-panel`).classList.add('active');
+    }
+
+    async function loadData() {
+      try {
+        // Load Leads
+        const leadsRes = await fetch('/api/admin/leads/');
+        const leads = await leadsRes.json();
+        const leadsBody = document.getElementById('leads-body');
+        leadsBody.innerHTML = leads.map(l => `
+          <tr>
+            <td><b>${l.lead_id}</b></td>
+            <td><span style="background:#eaf0e8; padding:3px 8px; border-radius:4px; font-size:11px;">${l.type}</span></td>
+            <td>${l.name}</td>
+            <td>${l.business || '-'}</td>
+            <td>${l.phone}</td>
+            <td style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${l.message || ''}">${l.message || '-'}</td>
+            <td>${new Date(l.created_at).toLocaleString()}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="7">No leads found.</td></tr>';
+
+        // Load Codes
+        const codesRes = await fetch('/api/admin/codes/');
+        const codes = await codesRes.json();
+        const codesBody = document.getElementById('codes-body');
+        codesBody.innerHTML = codes.map(c => `
+          <tr>
+            <td><code>${c.code}</code></td>
+            <td>${c.product}</td>
+            <td>${c.batch}</td>
+            <td>${c.mfg}</td>
+            <td>${c.exp}</td>
+            <td>${c.pack_size}</td>
+            <td class="${c.scan_count === 0 ? 'status-0' : 'status-1'}">${c.scan_count} Scans</td>
+            <td>${c.first_verified_at || '-'}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="8">No codes found.</td></tr>';
+      } catch (err) {
+        console.error("Error loading data", err);
+      }
+    }
+
+    // Add New Code Form Submit
+    document.getElementById('addCodeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newCode = {
+        code: document.getElementById('add-code').value.toUpperCase(),
+        product: document.getElementById('add-product').value,
+        batch: document.getElementById('add-batch').value,
+        mfg: document.getElementById('add-mfg').value,
+        exp: document.getElementById('add-exp').value,
+        packSize: document.getElementById('add-pack').value
+      };
+
+      try {
+        const res = await fetch('/api/admin/add-code/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newCode)
+        });
+        const result = await res.json();
+        if(result.success) {
+          alert('Code added successfully!');
+          document.getElementById('addModal').classList.remove('active');
+          document.getElementById('addCodeForm').reset();
+          loadData();
+        } else {
+          alert('Error: ' + result.message);
+        }
+      } catch (err) {
+        alert('Failed to connect to server.');
+      }
+    });
+
+    // CSV Download Helper
+    function exportCSV(tableId, filename) {
+      let csv = [];
+      let rows = document.querySelectorAll(`#${tableId} tr`);
+      for (let i = 0; i < rows.length; i++) {
+        let row = [], cols = rows[i].querySelectorAll("td, th");
+        for (let j = 0; j < cols.length; j++) 
+          row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+        csv.push(row.join(","));
+      }
+      let csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+      let downloadLink = document.createElement("a");
+      downloadLink.download = filename;
+      downloadLink.href = window.URL.createObjectURL(csvFile);
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+    }
+
+    window.onload = loadData;
+  </script>
+</body>
+</html>

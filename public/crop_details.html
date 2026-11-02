@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ crop.title }} - Package of Practices | AgriGrowth</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'DM Sans', sans-serif; background: #fbfaf6; color: #202920; margin: 0; padding: 0; }
+        .topbar { background: #183c29; color: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; }
+        .topbar b { font-family: 'Manrope', sans-serif; font-size: 18px; color: #e4c980; }
+        .back-btn { background: #8f1731; color: white; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; font-size: 13px; }
+        .hero-banner { background: linear-gradient(135deg, #641126 0%, #8f1731 100%); color: white; padding: 60px 5%; text-align: center; }
+        .badge-tag { display: inline-block; background: rgba(255,255,255,0.2); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; padding: 6px 14px; border-radius: 20px; margin-bottom: 16px; }
+        h1 { font-family: 'Manrope', sans-serif; font-size: clamp(28px, 5vw, 48px); margin: 0 auto 16px; line-height: 1.1; }
+        .container { max-width: 850px; margin: 40px auto; padding: 0 20px 60px; }
+        .content-box { background: white; border: 1px solid #e6e4da; border-radius: 10px; padding: 30px; font-size: 16px; line-height: 1.8; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+        .content-box ul { padding-left: 20px; }
+        .content-box li { margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <b>🌱 AgriGrowth Crop Solutions</b>
+        <a href="/" class="back-btn">← Back to Website</a>
+    </div>
+    <div class="hero-banner">
+        <span class="badge-tag">PACKAGE OF PRACTICES</span>
+        <h1>{{ crop.title }}</h1>
+    </div>
+    <div class="container">
+        <h2 style="font-family: 'Manrope', sans-serif; color: #183c29; margin-bottom: 20px;">🌾 Expert Guidelines & Practices</h2>
+        <div class="content-box">
+            {{ crop.package_and_practices|linebreaks }}
+        </div>
+    </div>
+</body>
+</html>
