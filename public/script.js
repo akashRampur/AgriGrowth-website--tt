@@ -120,7 +120,7 @@ document.querySelectorAll('.learn-toggle').forEach(btn => {
 });
 
 // Backend Lead Engine (Saves to SQLite DB + Opens WhatsApp)
-const LEAD_CONFIG = { salesWhatsApp: '919876543210', agronomyWhatsApp: '919876543210', hrWhatsApp: '919876543210' };
+const LEAD_CONFIG = { salesWhatsApp: '919795565890', agronomyWhatsApp: '919795565890', hrWhatsApp: '919795565890' };
 document.querySelectorAll('form.lead-form:not(#verify-form)').forEach(form => {
   form.addEventListener('submit', async event => {
     event.preventDefault();
@@ -204,7 +204,7 @@ verifyForm?.addEventListener('submit', async event => {
       verifyResult.innerHTML = `<h4>❌ Product Mismatch!</h4><p>Code <b>${result.code}</b> is genuine, but it belongs to <b>${result.actualProduct}</b>, NOT ${result.selectedProduct}.</p><p>Please double-check your packet.</p>`;
     } else if (result.status === 'fake') {
       verifyResult.className = 'verify-result state-fake';
-      verifyResult.innerHTML = `<h4>❌ Product Not Verified — Fake / Invalid!</h4><p>Code <b>${result.code}</b> does not match any genuine AgriGrowth batch record in our central database.</p><a class="verify-report-btn" href="https://wa.me/919876543210?text=${encodeURIComponent('FAKE CODE ALERT: ' + result.code)}" target="_blank" rel="noopener">🚨 Report Fake Product on WhatsApp →</a>`;
+      verifyResult.innerHTML = `<h4>❌ Product Not Verified — Fake / Invalid!</h4><p>Code <b>${result.code}</b> does not match any genuine AgriGrowth batch record in our central database.</p><a class="verify-report-btn" href="https://wa.me/919795565890?text=${encodeURIComponent('FAKE CODE ALERT: ' + result.code)}" target="_blank" rel="noopener">🚨 Report Fake Product on WhatsApp →</a>`;
     } else if (result.status === 'already_verified') {
       verifyResult.className = 'verify-result state-already';
       verifyResult.innerHTML = `<h4>⚠️ Genuine Product — But Already Verified Earlier!</h4><p>Code <b>${result.code}</b> is authentic, but was <b>already verified earlier</b> (Scan #${result.scanCount}).</p><div class="meta-list"><span><b>First Verified On:</b> ${result.firstVerifiedAt}</span><span><b>Product:</b> ${result.product} (${result.packSize})</span><span><b>Batch:</b> ${result.batch}</span></div>`;
